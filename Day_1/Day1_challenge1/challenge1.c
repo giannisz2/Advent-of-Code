@@ -1,22 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-void count_number(int* similarity, int second_col[], int number, int index) {
-    int counter = 0;
-    for(int i = 0; i < 1000; i++) {
-        if(number == second_col[i])
-            counter++;
-    }
-    similarity[index] = counter;
+#include "quicksort.h"
 
-}
 int main(void) {
-    FILE *input_file = fopen("../input.txt", "r");
+    FILE *input_file = fopen("input.txt", "r");
     if(input_file == NULL) {
         perror("Error opening file.");
         return 1;
     }
 
+    // Read the numbers from the file
     int numbers_in_list[1000][2];
     int row = 0;
     while(row < 1000) {
@@ -32,24 +26,31 @@ int main(void) {
         printf("%d %d\n", numbers_in_list[i][0], numbers_in_list[i][1]);
     }
 
+    // Place the numbers in different arrays so we can sort them
     int first_col[1000], second_col[1000];
     for(int i = 0; i < 1000; i++) {
         first_col[i] = numbers_in_list[i][0];
         second_col[i] = numbers_in_list[i][1];
     }
 
-    int index = 0;
-    int* number_similarity = malloc(1000*sizeof(int));
+    // Find last index of array and sort them using quicksort
+    int n = sizeof(first_col) / sizeof(first_col[0]);
+    quickSort(first_col, 0, n-1);
+    quickSort(second_col, 0, n-1);
+
+    printf("\nArrays sorted\n");
     for(int i = 0; i < 1000; i++) {
-        count_number(number_similarity, second_col, first_col[i], index);
-        index++;
+        printf("%d %d\n", first_col[i], second_col[i]);
     }
 
+    // Calculate the total sum
     int total_sum = 0;
     for(int i = 0; i < 1000; i++) {
-        total_sum += first_col[i] * number_similarity[i];
+        int distance = abs(first_col[i] - second_col[i]);
+        total_sum += distance;
     }
 
-    printf("Similarity score is: %d", total_sum);
+    printf("\nThe total distance is: %d", total_sum);
+
     return 0;
 }
